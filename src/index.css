@@ -1,0 +1,668 @@
+/* ===== CSS Variables / Design Tokens ===== */
+:root {
+  --bg: #ffffff;
+  --bg-surface: #f8f7f4;
+  --bg-hover: #f1efe8;
+  --text: #1a1a1a;
+  --text-secondary: #5f5e5a;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1a1a;
+    --bg-surface: #252525;
+    --bg-hover: #333333;
+    --text: #e8e6e1;
+    --text-secondary: #a8a7a3;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.15);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== App Layout ===== */
+.app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.app-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+
+/* ===== Tab Nav ===== */
+.tab-nav {
+  display: flex;
+  gap: 4px;
+  border-bottom: 0.5px solid var(--border-strong);
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+}
+
+.tab-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: #1a1a1a;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.4; cursor: default; }
+
+@media (prefers-color-scheme: dark) {
+  .btn-primary { background: #e8e6e1; color: #1a1a1a; }
+}
+
+.btn-secondary {
+  padding: 8px 20px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-secondary:hover { background: var(--bg-hover); }
+
+.btn-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-icon:hover { background: var(--bg-hover); color: var(--text); }
+.btn-icon.btn-danger:hover { background: #fde8e8; color: #c53030; }
+
+/* ===== Section Title ===== */
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+}
+
+/* ===== Overview: Metric Cards ===== */
+.metric-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.metric-card {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* ===== Overview: Destination Cards ===== */
+.dest-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+.dest-card {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border);
+  border-left: 4px solid;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+
+.dest-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.dest-flag { font-size: 20px; }
+.dest-name { font-weight: 600; font-size: 15px; }
+
+.dest-card-dates {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.dest-card-total {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ===== Overview: Category Breakdown ===== */
+.cat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cat-row-label {
+  width: 120px;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.cat-bar-track {
+  flex: 1;
+  height: 20px;
+  background: var(--bg-surface);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.cat-row-amount {
+  width: 90px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ===== Category Pill ===== */
+.cat-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ===== Destination Dot ===== */
+.dest-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ===== Expense Form ===== */
+.expense-form {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.expense-form h3 {
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.form-grid label,
+.edit-form label,
+.bs-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea,
+.edit-form input,
+.edit-form select,
+.edit-form textarea,
+.bs-filters select {
+  padding: 8px 10px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.form-grid input:focus,
+.form-grid select:focus,
+.edit-form input:focus,
+.edit-form select:focus {
+  border-color: #378ADD;
+}
+
+/* ===== Expense Table ===== */
+.expense-table-wrap {
+  overflow-x: auto;
+}
+
+.expense-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.expense-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 0.5px solid var(--border-strong);
+}
+
+.expense-table td {
+  padding: 10px;
+  border-bottom: 0.5px solid var(--border);
+  vertical-align: top;
+}
+
+.expense-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.td-date {
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.td-desc {
+  font-weight: 500;
+}
+
+.td-notes {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.td-amount {
+  font-weight: 600;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.td-actions {
+  white-space: nowrap;
+}
+
+/* ===== Budget Sheet Filters ===== */
+.bs-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.bs-footer-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.expense-table tfoot td {
+  border-top: 1px solid var(--border-strong);
+  padding-top: 12px;
+  font-weight: 600;
+}
+
+/* ===== Calendar ===== */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.cal-month {
+  font-size: 18px;
+  font-weight: 600;
+  min-width: 180px;
+  text-align: center;
+}
+
+.cal-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.cal-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.cal-weekday {
+  background: var(--bg-surface);
+  padding: 6px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.cal-cell {
+  background: var(--bg);
+  min-height: 72px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cal-cell.empty {
+  background: var(--bg-surface);
+}
+
+.cal-cell.has-dest {
+  background: var(--bg-surface);
+}
+
+.cal-day {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.cal-badges {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.cal-badge {
+  width: 14px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.cal-expense {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+  margin-top: auto;
+}
+
+/* ===== Destination Date Editors ===== */
+.dest-date-editors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.dest-date-card {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border);
+  border-left: 4px solid;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+
+.dest-date-header {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.dest-date-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dest-date-inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.dest-date-inputs input {
+  padding: 6px 8px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ===== Share Panel ===== */
+.share-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.share-section {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.share-section h3 {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.share-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.share-code-wrap {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.share-code {
+  background: var(--bg);
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 11px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.share-import-input {
+  width: 100%;
+  padding: 10px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--bg);
+  resize: vertical;
+  margin-bottom: 8px;
+}
+
+.share-status {
+  padding: 10px 14px;
+  background: #EAF3DE;
+  color: #3B6D11;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ===== Modal ===== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal {
+  background: var(--bg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal h2 {
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .app { padding: 16px 12px 32px; }
+  .metric-cards { grid-template-columns: repeat(2, 1fr); }
+  .dest-cards { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .dest-date-editors { grid-template-columns: 1fr; }
+  .cal-cell { min-height: 56px; padding: 4px; }
+  .cal-expense { font-size: 9px; }
+}
