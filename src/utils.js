@@ -1,3 +1,19 @@
+// ── Destination hierarchy helpers ────────────────────────────────
+
+export function getTopLevel(destDates) {
+  return Object.keys(destDates).filter(d => !destDates[d].parent)
+}
+
+export function getChildren(parent, destDates) {
+  return Object.keys(destDates).filter(d => destDates[d].parent === parent)
+}
+
+export function destTotalWithChildren(dest, expenses, destDates) {
+  const children = getChildren(dest, destDates)
+  const allDests = [dest, ...children]
+  return expenses.filter(e => allDests.includes(e.dest)).reduce((s, e) => s + e.amount, 0)
+}
+
 export function fmt(n) {
   return '$' + Number(n).toLocaleString('en-US', {
     minimumFractionDigits: 2,

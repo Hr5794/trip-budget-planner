@@ -1,13 +1,18 @@
 import { useState } from 'react'
-import { CATEGORIES, CAT_LABELS, CAT_PILL_BG, CAT_TEXT, DESTINATIONS, DEST_COLORS } from '../constants'
-import { fmt } from '../utils'
+import { CATEGORIES, CAT_LABELS, CAT_PILL_BG, CAT_TEXT, getDestColor } from '../constants'
+import { fmt, getChildren } from '../utils'
+import DestSelect from './DestSelect'
 
-export default function BudgetSheet({ expenses, onEdit, onDelete }) {
+export default function BudgetSheet({ expenses, destinations, destDates, onEdit, onDelete }) {
   const [filterDest, setFilterDest] = useState('')
   const [filterCat, setFilterCat] = useState('')
 
   let filtered = [...expenses]
-  if (filterDest) filtered = filtered.filter(e => e.dest === filterDest)
+  if (filterDest) {
+    const children = getChildren(filterDest, destDates)
+    const matchDests = [filterDest, ...children]
+    filtered = filtered.filter(e => matchDests.includes(e.dest))
+  }
   if (filterCat) filtered = filtered.filter(e => e.cat === filterCat)
   filtered.sort((a, b) => (a.date || '').localeCompare(b.date || ''))
 
@@ -18,11 +23,13 @@ export default function BudgetSheet({ expenses, onEdit, onDelete }) {
       <div className="bs-filters">
         <label>
           Destination
-          <select value={filterDest} onChange={e => setFilterDest(e.target.value)}>
-            <option value="">All</option>
-            {DESTINATIONS.map(d => <option key={d} value={d}>{d}</option>)}
-            <option value="multiple">Multiple</option>
-          </select>
+          <DestSelect
+            name="filterDest"
+            value={filterDest}
+            onChange={e => setFilterDest(e.target.value)}
+            destDates={destDates}
+            allOption
+          />
         </label>
         <label>
           Category
@@ -59,7 +66,7 @@ export default function BudgetSheet({ expenses, onEdit, onDelete }) {
                   </span>
                 </td>
                 <td>
-                  <span className="dest-dot" style={{ backgroundColor: DEST_COLORS[exp.dest] || DEST_COLORS.multiple }} />
+                  <span className="dest-dot" style={{ backgroundColor: getDestColor(exp.dest, destDates) }} />
                   {exp.dest}
                 </td>
                 <td className="td-amount">{fmt(exp.amount)}</td>

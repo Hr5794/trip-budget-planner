@@ -144,11 +144,117 @@ body {
 .btn-icon:hover { background: var(--bg-hover); color: var(--text); }
 .btn-icon.btn-danger:hover { background: #fde8e8; color: #c53030; }
 
+.btn-sm {
+  padding: 5px 14px;
+  font-size: 12px;
+}
+
 /* ===== Section Title ===== */
 .section-title {
   font-size: 15px;
   font-weight: 600;
   margin: 24px 0 12px;
+}
+
+.section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24px 0 12px;
+}
+
+.section-title-row .section-title {
+  margin: 0;
+}
+
+/* ===== Add Destination Form ===== */
+.add-dest-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.add-dest-form input[type="text"]:not(.emoji-input) {
+  padding: 7px 10px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  flex: 1;
+  max-width: 260px;
+}
+
+.add-dest-form input:focus {
+  outline: none;
+  border-color: #378ADD;
+}
+
+.add-dest-form .parent-select {
+  padding: 7px 10px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  flex: none;
+  max-width: 180px;
+}
+
+.add-dest-error {
+  font-size: 12px;
+  color: #c53030;
+}
+
+/* ===== Emoji & Color Inputs ===== */
+.emoji-input {
+  width: 3ch;
+  padding: 5px 4px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-size: 18px;
+  text-align: center;
+  background: var(--bg);
+  flex: none;
+}
+
+.emoji-input:focus {
+  outline: none;
+  border-color: #378ADD;
+}
+
+.color-input {
+  width: 32px;
+  height: 32px;
+  padding: 2px;
+  border: 0.5px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  cursor: pointer;
+  flex: none;
+}
+
+.color-input::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+/* ===== Remove Destination Button ===== */
+.btn-remove-dest {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.dest-card:hover .btn-remove-dest {
+  opacity: 1;
 }
 
 /* ===== Overview: Metric Cards ===== */
@@ -214,6 +320,38 @@ body {
 .dest-card-total {
   font-size: 18px;
   font-weight: 700;
+}
+
+.dest-card-total-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ===== Sub-destination breakdown inside parent card ===== */
+.dest-card-children {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 0.5px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dest-child-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.dest-child-name {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.dest-child-amount {
+  font-weight: 600;
 }
 
 /* ===== Overview: Category Breakdown ===== */
@@ -511,6 +649,16 @@ body {
   gap: 12px;
 }
 
+.dest-date-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dest-date-card-child {
+  margin-left: 16px;
+}
+
 .dest-date-card {
   background: var(--bg-surface);
   border: 0.5px solid var(--border);
@@ -520,9 +668,16 @@ body {
 }
 
 .dest-date-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 10px;
+}
+
+.dest-date-header .color-input {
+  margin-left: auto;
 }
 
 .dest-date-inputs {

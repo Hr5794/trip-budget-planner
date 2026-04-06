@@ -6,63 +6,94 @@ import Calendar from './components/Calendar'
 import BudgetSheet from './components/BudgetSheet'
 import SharePanel from './components/SharePanel'
 import EditModal from './components/EditModal'
-import { SEED_EXPENSES, SEED_DEST_DATES } from './seed'
+import {
+  fetchExpenses,
+  createExpense,
+  updateExpense,
+  deleteExpense as apiDeleteExpense,
+  fetchDestDates,
+  updateDestDates,
+  bulkReplaceExpenses,
+  createDestination as apiCreateDestination,
+  deleteDestination as apiDeleteDestination,
+} from './api'
 
 const TABS = ['overview', 'expenses', 'calendar', 'budget', 'share']
 
 export default function App() {
   const [tab, setTab] = useState('overview')
   const [expenses, setExpenses] = useState([])
-  const [destDates, setDestDates] = useState({
-    Mexico: { start: '', end: '' },
-    Spain: { start: '', end: '' },
-    'New York': { start: '', end: '' },
-    Colombia: { start: '', end: '' },
-  })
+  const [destDates, setDestDates] = useState({})
   const [editingExpense, setEditingExpense] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  // Derive destinations list from destDates keys
+  const destinations = Object.keys(destDates)
 
   useEffect(() => {
-    const saved = localStorage.getItem('trip_expenses')
-    const savedDates = localStorage.getItem('trip_dest_dates')
-    if (saved) {
-      setExpenses(JSON.parse(saved))
-      if (savedDates) setDestDates(JSON.parse(savedDates))
-    } else {
-      setExpenses(SEED_EXPENSES)
-      setDestDates(SEED_DEST_DATES)
+    async function load() {
+      try {
+        const [exps, dates] = await Promise.all([fetchExpenses(), fetchDestDates()])
+        setExpenses(exps)
+        if (Object.keys(dates).length > 0) setDestDates(dates)
+      } catch (err) {
+        console.error('Failed to load data:', err)
+      } finally {
+        setLoading(false)
+      }
     }
+    load()
   }, [])
 
-  useEffect(() => {
-    if (expenses.length > 0) {
-      localStorage.setItem('trip_expenses', JSON.stringify(expenses))
-    }
-  }, [expenses])
-
-  useEffect(() => {
-    localStorage.setItem('trip_dest_dates', JSON.stringify(destDates))
-  }, [destDates])
-
-  function addExpense(exp) {
-    setExpenses(prev => [...prev, { ...exp, id: Date.now() }])
+  async function addExpense(exp) {
+    const saved = await createExpense(exp)
+    setExpenses(prev => [...prev, saved])
   }
 
-  function deleteExpense(id) {
+  async function handleDelete(id) {
+    await apiDeleteExpense(id)
     setExpenses(prev => prev.filter(e => e.id !== id))
   }
 
-  function saveEdit(updated) {
-    setExpenses(prev => prev.map(e => (e.id === updated.id ? updated : e)))
+  async function saveEdit(updated) {
+    const saved = await updateExpense(updated)
+    setExpenses(prev => prev.map(e => (e.id === saved.id ? saved : e)))
     setEditingExpense(null)
   }
 
-  function updateDestDate(dest, key, val) {
-    setDestDates(prev => ({ ...prev, [dest]: { ...prev[dest], [key]: val } }))
+  async function handleUpdateDestDate(dest, key, val) {
+    const updated = { ...destDates, [dest]: { ...destDates[dest], [key]: val } }
+    setDestDates(updated)
+    await updateDestDates(updated)
   }
 
-  function importData(newExpenses, newDestDates) {
-    setExpenses(newExpenses)
-    if (newDestDates) setDestDates(newDestDates)
+  async function handleAddDestination(name, color, emoji, parent) {
+    await apiCreateDestination(name, color, emoji, parent)
+    setDestDates(prev => ({ ...prev, [name]: { start: '', end: '', color, emoji, parent: parent || '' } }))
+  }
+
+  async function handleDeleteDestination(name) {
+    await apiDeleteDestination(name)
+    setDestDates(prev => {
+      const next = { ...prev }
+      delete next[name]
+      return next
+    })
+    // Reassign expenses from deleted dest to "multiple" in local state
+    setExpenses(prev => prev.map(e => e.dest === name ? { ...e, dest: 'multiple' } : e))
+  }
+
+  async function importData(newExpenses, newDestDates) {
+    const saved = await bulkReplaceExpenses(newExpenses)
+    setExpenses(saved)
+    if (newDestDates) {
+      await updateDestDates(newDestDates)
+      setDestDates(newDestDates)
+    }
+  }
+
+  if (loading) {
+    return <div className="app"><p style={{ textAlign: 'center', marginTop: 80 }}>Loading...</p></div>
   }
 
   return (
@@ -70,22 +101,30 @@ export default function App() {
       <h1 className="app-title">Summer Trip Budget Planner</h1>
       <TabNav tabs={TABS} active={tab} onChange={setTab} />
       <div className="tab-content">
-        {tab === 'overview' && <Overview expenses={expenses} destDates={destDates} />}
+        {tab === 'overview' && (
+          <Overview
+            expenses={expenses}
+            destDates={destDates}
+            destinations={destinations}
+            onAddDestination={handleAddDestination}
+            onDeleteDestination={handleDeleteDestination}
+          />
+        )}
         {tab === 'expenses' && (
-          <Expenses expenses={expenses} onAdd={addExpense} onDelete={deleteExpense} onEdit={setEditingExpense} />
+          <Expenses expenses={expenses} destinations={destinations} destDates={destDates} onAdd={addExpense} onDelete={handleDelete} onEdit={setEditingExpense} />
         )}
         {tab === 'calendar' && (
-          <Calendar expenses={expenses} destDates={destDates} onUpdateDestDate={updateDestDate} />
+          <Calendar expenses={expenses} destDates={destDates} destinations={destinations} onUpdateDestDate={handleUpdateDestDate} />
         )}
         {tab === 'budget' && (
-          <BudgetSheet expenses={expenses} onEdit={setEditingExpense} onDelete={deleteExpense} />
+          <BudgetSheet expenses={expenses} destinations={destinations} destDates={destDates} onEdit={setEditingExpense} onDelete={handleDelete} />
         )}
         {tab === 'share' && (
           <SharePanel expenses={expenses} destDates={destDates} onImport={importData} />
         )}
       </div>
       {editingExpense && (
-        <EditModal expense={editingExpense} onSave={saveEdit} onClose={() => setEditingExpense(null)} />
+        <EditModal expense={editingExpense} destinations={destinations} destDates={destDates} onSave={saveEdit} onClose={() => setEditingExpense(null)} />
       )}
     </div>
   )

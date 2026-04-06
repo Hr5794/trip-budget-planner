@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { CATEGORIES, CAT_LABELS, DESTINATIONS } from '../constants'
+import { CATEGORIES, CAT_LABELS } from '../constants'
+import DestSelect from './DestSelect'
 
-export default function EditModal({ expense, onSave, onClose }) {
+export default function EditModal({ expense, destinations, destDates, onSave, onClose }) {
   const [form, setForm] = useState({ ...expense })
 
   function handleChange(e) {
@@ -44,12 +45,7 @@ export default function EditModal({ expense, onSave, onClose }) {
           </label>
           <label>
             Destination
-            <select name="dest" value={form.dest} onChange={handleChange}>
-              {DESTINATIONS.map(d => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-              <option value="multiple">Multiple</option>
-            </select>
+            <DestSelect name="dest" value={form.dest} onChange={handleChange} destDates={destDates} />
           </label>
           <label>
             Notes

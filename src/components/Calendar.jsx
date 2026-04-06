@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { DESTINATIONS, DEST_COLORS, FLAGS } from '../constants'
-import { fmt } from '../utils'
+import { getDestColor } from '../constants'
+import { fmt, getTopLevel, getChildren } from '../utils'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -10,7 +10,7 @@ function dateStr(y, m, d) {
   return `${y}-${pad(m + 1)}-${pad(d)}`
 }
 
-export default function Calendar({ expenses, destDates, onUpdateDestDate }) {
+export default function Calendar({ expenses, destDates, destinations, onUpdateDestDate }) {
   const [viewDate, setViewDate] = useState(new Date(2025, 5, 1)) // June 2025
 
   const year = viewDate.getFullYear()
@@ -43,13 +43,61 @@ export default function Calendar({ expenses, destDates, onUpdateDestDate }) {
 
   function getDestsForDate(ds) {
     const result = []
-    for (const dest of DESTINATIONS) {
+    for (const dest of destinations) {
       const dd = destDates[dest]
       if (dd && dd.start && dd.end && ds >= dd.start && ds <= dd.end) {
         result.push(dest)
       }
     }
     return result
+  }
+
+  const topLevel = getTopLevel(destDates)
+
+  function renderDateCard(d) {
+    const dd = destDates[d] || { start: '', end: '' }
+    const color = getDestColor(d, destDates)
+    const isChild = !!destDates[d]?.parent
+    return (
+      <div key={d} className={`dest-date-card ${isChild ? 'dest-date-card-child' : ''}`} style={{ borderLeftColor: color }}>
+        <div className="dest-date-header">
+          <input
+            type="text"
+            className="emoji-input"
+            value={dd.emoji || ''}
+            onChange={e => onUpdateDestDate(d, 'emoji', e.target.value)}
+            placeholder="\u{1F3D6}\u{FE0F}"
+            maxLength={4}
+          />
+          <span>{d}</span>
+          <input
+            type="color"
+            className="color-input"
+            value={color}
+            onChange={e => onUpdateDestDate(d, 'color', e.target.value)}
+            title="Change color"
+          />
+        </div>
+        <div className="dest-date-inputs">
+          <label>
+            From
+            <input
+              type="date"
+              value={dd.start}
+              onChange={e => onUpdateDestDate(d, 'start', e.target.value)}
+            />
+          </label>
+          <label>
+            To
+            <input
+              type="date"
+              value={dd.end}
+              onChange={e => onUpdateDestDate(d, 'end', e.target.value)}
+            />
+          </label>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -61,10 +109,10 @@ export default function Calendar({ expenses, destDates, onUpdateDestDate }) {
       </div>
 
       <div className="cal-legend">
-        {DESTINATIONS.map(d => (
+        {destinations.map(d => (
           <span key={d} className="cal-legend-item">
-            <span className="dest-dot" style={{ backgroundColor: DEST_COLORS[d] }} />
-            {FLAGS[d]} {d}
+            <span className="dest-dot" style={{ backgroundColor: getDestColor(d, destDates) }} />
+            {destDates[d]?.emoji ? `${destDates[d].emoji} ` : ''}{d}
           </span>
         ))}
       </div>
@@ -83,7 +131,7 @@ export default function Calendar({ expenses, destDates, onUpdateDestDate }) {
               <span className="cal-day">{day}</span>
               <div className="cal-badges">
                 {dests.map(d => (
-                  <span key={d} className="cal-badge" style={{ backgroundColor: DEST_COLORS[d] }} title={d} />
+                  <span key={d} className="cal-badge" style={{ backgroundColor: getDestColor(d, destDates) }} title={d} />
                 ))}
               </div>
               {expTotal && <div className="cal-expense">{fmt(expTotal)}</div>}
@@ -94,31 +142,12 @@ export default function Calendar({ expenses, destDates, onUpdateDestDate }) {
 
       <h3 className="section-title">Destination Dates</h3>
       <div className="dest-date-editors">
-        {DESTINATIONS.map(d => {
-          const dd = destDates[d] || { start: '', end: '' }
+        {topLevel.map(d => {
+          const children = getChildren(d, destDates)
           return (
-            <div key={d} className="dest-date-card" style={{ borderLeftColor: DEST_COLORS[d] }}>
-              <div className="dest-date-header">
-                <span>{FLAGS[d]} {d}</span>
-              </div>
-              <div className="dest-date-inputs">
-                <label>
-                  From
-                  <input
-                    type="date"
-                    value={dd.start}
-                    onChange={e => onUpdateDestDate(d, 'start', e.target.value)}
-                  />
-                </label>
-                <label>
-                  To
-                  <input
-                    type="date"
-                    value={dd.end}
-                    onChange={e => onUpdateDestDate(d, 'end', e.target.value)}
-                  />
-                </label>
-              </div>
+            <div key={d} className="dest-date-group">
+              {renderDateCard(d)}
+              {children.map(c => renderDateCard(c))}
             </div>
           )
         })}

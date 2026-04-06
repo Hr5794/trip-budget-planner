@@ -1,19 +1,15 @@
-export const DESTINATIONS = ['Mexico', 'Spain', 'New York', 'Colombia']
+// Color palette for auto-assigning colors to new destinations
+export const DEST_COLOR_PALETTE = [
+  '#1D9E75', '#D85A30', '#378ADD', '#D4537E',
+  '#8B5CF6', '#059669', '#D97706', '#6366F1',
+  '#EC4899', '#14B8A6', '#F59E0B', '#3B82F6',
+]
 
+// Legacy fallback for "multiple" destination
 export const DEST_COLORS = {
-  Mexico: '#1D9E75',
-  Spain: '#D85A30',
-  'New York': '#378ADD',
-  Colombia: '#D4537E',
   multiple: '#888780',
 }
 
-export const FLAGS = {
-  Mexico: '\u{1F1F2}\u{1F1FD}',
-  Spain: '\u{1F1EA}\u{1F1F8}',
-  'New York': '\u{1F5FD}',
-  Colombia: '\u{1F1E8}\u{1F1F4}',
-}
 
 export const CAT_LABELS = {
   flight: '\u2708 Flight',
@@ -56,3 +52,22 @@ export const CAT_PILL_BG = {
 }
 
 export const CATEGORIES = Object.keys(CAT_LABELS)
+
+// Get a destination's color — from stored data, or fallback to palette
+export function getDestColor(dest, destDates) {
+  if (dest === 'multiple') return '#888780'
+  const dd = destDates && destDates[dest]
+  if (dd && dd.color) return dd.color
+  // Fallback: pick from palette based on position
+  const keys = destDates ? Object.keys(destDates) : []
+  const idx = keys.indexOf(dest)
+  if (idx >= 0) return DEST_COLOR_PALETTE[idx % DEST_COLOR_PALETTE.length]
+  return '#888780'
+}
+
+// Pick the next available color from the palette
+export function nextDestColor(destDates) {
+  const usedColors = Object.values(destDates || {}).map(d => d.color).filter(Boolean)
+  const available = DEST_COLOR_PALETTE.find(c => !usedColors.includes(c))
+  return available || DEST_COLOR_PALETTE[Object.keys(destDates || {}).length % DEST_COLOR_PALETTE.length]
+}

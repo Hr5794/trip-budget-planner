@@ -42,6 +42,27 @@ export async function updateDestDates(destDates) {
   return res.json()
 }
 
+export async function createDestination(destination, color, emoji, parent) {
+  const res = await fetch(`${API}/dest-dates`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ destination, color, emoji, parent }),
+  })
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.error || `createDestination failed: ${res.status}`)
+  }
+  return res.json()
+}
+
+export async function deleteDestination(destination) {
+  const res = await fetch(`${API}/dest-dates/${encodeURIComponent(destination)}`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) throw new Error(`deleteDestination failed: ${res.status}`)
+  return res.json()
+}
+
 export async function bulkReplaceExpenses(expenses) {
   const res = await fetch(`${API}/expenses/bulk-replace`, {
     method: 'POST',
